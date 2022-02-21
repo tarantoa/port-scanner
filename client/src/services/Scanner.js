@@ -1,3 +1,0 @@
-// scanPorts(domain) -> [ports]
-
-// 
