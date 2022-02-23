@@ -12,5 +12,6 @@ cargo run
 ## Run the gui
 ```
 cd client
+npm install
 npm start
 ```
