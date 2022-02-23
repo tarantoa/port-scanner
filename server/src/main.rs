@@ -2,7 +2,6 @@
 extern crate rocket;
 
 mod crtshentry;
-mod dnsresolver;
 mod domain;
 mod ports;
 
