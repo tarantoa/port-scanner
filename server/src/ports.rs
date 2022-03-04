@@ -93,15 +93,21 @@ pub const MOST_COMMON_PORTS_100: &[u16] = &[
 
 pub fn get_open_ports(domain: String) -> Vec<Port> {
     let sock = format!("{}:1024", domain)
-        .to_socket_addrs()
-        .expect("error creating socket address")
+        .to_socket_addrs();
+    let sock = match sock.is_ok() {
+            true => sock.unwrap(),
+            _ => String::from("localhost:1024").to_socket_addrs().unwrap(),
+        }
         .collect::<Vec<SocketAddr>>();
 
-    MOST_COMMON_PORTS_100
-        .into_par_iter()
-        .filter(|port| is_open(sock[0], **port))
-        .map(|port| Port { port: *port })
-        .collect::<Vec<Port>>()
+    match sock[0].ip().is_loopback() {
+        true => Vec::new(),
+        false => MOST_COMMON_PORTS_100
+            .into_par_iter()
+            .filter(|port| is_open(sock[0], **port))
+            .map(|port| Port { port: *port })
+            .collect::<Vec<Port>>(),
+    }
 }
 
 fn is_open(mut sock: SocketAddr, port: u16) -> bool {

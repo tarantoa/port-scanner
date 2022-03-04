@@ -40,6 +40,7 @@ async fn enumerate_subdomains(domain_name: &str) -> String {
         .send()
         .await
         .expect("error retrieving certificate entries");
+
     let contents = response
         .json::<Vec<CrtShEntry>>()
         .await

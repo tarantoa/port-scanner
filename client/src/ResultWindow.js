@@ -13,25 +13,26 @@ import Paper from '@mui/material/Paper';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 
-const portCache = new Map();
-
+const getResultPorts = async (name, uuid) => {
+    let result = await fetch('http://localhost:8000/' + name + '/ports');
+    let content = result.json();
+    return content;
+};
 
 
 const Result = (props) => {
-    const getResultPorts = (name, uuid) => {
-        if (!portCache.has(uuid)) {
-            fetch('http://localhost:8000/' + name + '/ports')
-                .then(response => response.json())
-                .then(json => {console.log(json); portCache.set(uuid, json);})
-        }
-
-        return portCache.get(uuid);
-    };
-
-    console.log(getResultPorts);
-
     const { domain, uuid } = props;
+
     const [open, setOpen] = React.useState(false);
+    const [cache, setCache] = React.useState([]);
+    React.useEffect(() => {
+        const load = async () => {
+            const ports = await getResultPorts(domain, uuid);
+            setCache(ports);
+        };
+        load();
+    }, [domain, uuid]);
+
     return (<>
         <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
             <TableCell>
@@ -40,7 +41,7 @@ const Result = (props) => {
                 </IconButton>
             </TableCell>
             <TableCell component="th" scope="row">
-                {domain}, {uuid}
+                {domain}
             </TableCell>
         </TableRow>
         <TableRow>
@@ -54,7 +55,7 @@ const Result = (props) => {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {getResultPorts(domain, uuid).map(port => <TableRow>{port}</TableRow>)}
+                                {cache.map(port => <TableRow key={port.port}>{port.port}</TableRow>)}
                             </TableBody>
                         </Table>
                     </Box>
@@ -66,7 +67,7 @@ const Result = (props) => {
 
 const ResultWindow = (props) => {
     const { subdomains } = props;
-    const [uid, setUID] = React.useState(0)
+
     return subdomains && subdomains.length > 0 ? (<>
         <TableContainer component={Paper}>
             <Table>
