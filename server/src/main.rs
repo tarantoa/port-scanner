@@ -45,10 +45,10 @@ async fn enumerate_subdomains(domain_name: &str) -> String {
         .await
         .expect("error reading json response");
 
-    let subdomains = contents
-        .into_iter()
-        .filter(|entry| !entry.name_value.contains('*'))
-        .map(|entry| Domain{ name: entry.name_value.clone() })
+    let subdomains = (0..contents.len())
+        .map(|i| (&contents[i], i))
+        .filter(|(entry, _id)| !entry.name_value.contains('*'))
+        .map(|(entry, id)| Domain { name: entry.name_value.clone(), uuid: id })
         .collect::<Vec<Domain>>();
 
     serde_json::to_string(&subdomains)

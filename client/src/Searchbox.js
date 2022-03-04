@@ -6,8 +6,8 @@ const getSubdomains = (domain) => {
 
 const enumerateSubdomains = (domain, setSubdomains) => {
     getSubdomains(domain)
-        .then(response => {console.log(response); return response.json(); })
-        .then(json => setSubdomains(json));
+        .then(response => response.json())
+        .then(json => {console.log(json); return setSubdomains(json)});
 }
 
 const Searchbox = (props) => {
