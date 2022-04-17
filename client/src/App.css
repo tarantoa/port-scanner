@@ -1,5 +1,9 @@
 .App {
+  margin: 0 auto;
+  margin-top: 2rem;
   text-align: center;
+  width: 90%;
+  height: 100vh;
 }
 
 .App-logo {
@@ -35,4 +39,8 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+input:-webkit-autofill { 
+  -webkit-background-clip: text;
 }

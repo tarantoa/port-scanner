@@ -1,0 +1,14 @@
+.search-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+#submit {
+  color: black;
+}
+
+#submit:hover {
+  background: white;
+}
