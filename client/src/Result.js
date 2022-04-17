@@ -18,11 +18,6 @@ const Result = (props) => {
     const [loadingStatus, setLoadingStatus] = useState(false);
     const [open, setOpen] = useState(false);
 
-    const getOpenPorts = async (name, uuid) => {
-        let result = await fetch('http://localhost:8000/' + name + '/ports');
-        return result.json();
-    };
-
     useEffect(() => {
         const scan = async () => {
             setLoadingStatus(true);
@@ -36,6 +31,11 @@ const Result = (props) => {
             setHasScanned(true);
         }
     }, [domain, hasScanned, uuid, open]);
+
+    const getOpenPorts = async (name, uuid) => {
+        let result = await fetch('http://localhost:8000/' + name + '/ports');
+        return result.json();
+    };
 
     return (<>
         <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
@@ -52,22 +52,22 @@ const Result = (props) => {
             <TableCell style={{ paddingBottom: 0, paddingTop: 0}} colSpan={6}>
                 <Collapse in={open} timeout="auto" unmountOnExit>
                     <Box sx={{ margin: 1}}>
-                        {
-                            loadingStatus ?
-                            "Loading..." :
-                            <Table size="small">
-                                <TableHead>
-                                    <TableRow>
-                                        <TableCell>Open Ports</TableCell>
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                    <TableRow>
-                                        <TableCell>{openPorts.map(port => port.port).join(', ')}</TableCell>
-                                    </TableRow>
-                                </TableBody>
-                            </Table>
-                        }
+                    {
+                        loadingStatus ?
+                        <p>Loading...</p> :
+                        <Table size="small">
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell>Open Ports</TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                <TableRow>
+                                    <TableCell>{openPorts.map(port => port.port).join(', ')}</TableCell>
+                                </TableRow>
+                            </TableBody>
+                        </Table>
+                    }
                     </Box>
                 </Collapse>
             </TableCell>

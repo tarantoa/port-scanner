@@ -1,9 +1,9 @@
-import logo from './logo.svg';
 import './App.css';
+import Box from '@mui/material/Box';
 
 import { useState } from 'react';
 
-import Searchbox from './Searchbox.js';
+import Searchbox from './search-box/Searchbox.js';
 import ResultWindow from './ResultWindow.js';
 
 
@@ -12,7 +12,9 @@ function App() {
   return (
     <div className="App">
       <Searchbox setSubdomains={setSubdomains} />
-      <ResultWindow subdomains={subdomains} />
+      <Box mt={3}>
+        <ResultWindow subdomains={subdomains} />
+      </Box>
     </div>
   );
 }
