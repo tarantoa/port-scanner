@@ -10,6 +10,7 @@ use domain::Domain;
 use rocket::http::Header;
 use rocket::{Request, Response};
 use rocket::fairing::{Fairing, Info, Kind};
+use std::collections::HashSet;
 
 pub struct CORS;
 
@@ -46,10 +47,24 @@ async fn enumerate_subdomains(domain_name: &str) -> String {
         .await
         .expect("error reading json response");
 
-    let subdomains = (0..contents.len())
-        .map(|i| (&contents[i], i))
-        .filter(|(entry, _id)| !entry.name_value.contains('*'))
-        .map(|(entry, id)| Domain { name: entry.name_value.clone(), uuid: id })
+    let unique_subdomains = contents
+        .into_iter()
+        .map(|entry| entry.name_value)
+        .map(|domain| domain
+            .split("\n")
+            .map(String::from)
+            .collect::<HashSet<String>>())
+        .flatten()
+        .filter(|domain| !domain.contains('*'))
+        .collect::<HashSet<String>>();
+
+    let unique_subdomains = unique_subdomains
+        .into_iter()
+        .collect::<Vec<String>>();
+
+    let subdomains = (0..unique_subdomains.len())
+        .map(|i| (unique_subdomains[i].clone(), i))
+        .map(|(domain, id)| Domain { name: domain, uuid: id })
         .collect::<Vec<Domain>>();
 
     serde_json::to_string(&subdomains)
