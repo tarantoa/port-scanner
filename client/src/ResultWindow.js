@@ -11,7 +11,7 @@ const ResultWindow = (props) => {
     const { subdomains } = props;
 
     return subdomains && subdomains.length > 0 ? (<>
-        <TableContainer component={Paper}>
+        <TableContainer>
             <Table>
                 <TableHead>
                     <TableRow>

@@ -10,34 +10,32 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { useState, useEffect } from 'react';
 
-const getResultPorts = async (name, uuid) => {
-    let result = await fetch('http://localhost:8000/' + name + '/ports');
-    let content = result.json();
-    return content;
-};
-
 const Result = (props) => {
     const { domain, uuid } = props;
 
+    const [openPorts, setOpenPorts] = useState([]);
+    const [hasScanned, setHasScanned] = useState(false);
+    const [loadingStatus, setLoadingStatus] = useState(false);
     const [open, setOpen] = useState(false);
-    const [cache, setCache] = useState([]);
-    const [loading, setLoading] = useState(false);
 
-    let hasScanned = false;
+    const getOpenPorts = async (name, uuid) => {
+        let result = await fetch('http://localhost:8000/' + name + '/ports');
+        return result.json();
+    };
 
     useEffect(() => {
-        const load = async () => {
-            setLoading(true);
-            const ports = await getResultPorts(domain, uuid);
-            setCache(ports);
-            setLoading(false);
+        const scan = async () => {
+            setLoadingStatus(true);
+            const ports = await getOpenPorts(domain, uuid);
+            setOpenPorts(ports);
+            setLoadingStatus(false);
         };
 
         if (open && !hasScanned) {
-            load();
-            hasScanned = true;
+            scan();
+            setHasScanned(true);
         }
-    }, [open]);
+    }, [domain, hasScanned, uuid, open]);
 
     return (<>
         <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
@@ -52,22 +50,23 @@ const Result = (props) => {
         </TableRow>
         <TableRow>
             <TableCell style={{ paddingBottom: 0, paddingTop: 0}} colSpan={6}>
-                <Collapse in={open} timout="auto" unmountOnExit>
+                <Collapse in={open} timeout="auto" unmountOnExit>
                     <Box sx={{ margin: 1}}>
-
-                        {loading ?
-                        <p>Loading...</p>
-                        :
-                        <Table size="small">
-                            <TableHead>
-                                <TableRow>
-                                    <TableCell>Open Ports</TableCell>
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {cache.map(port => <TableRow key={port.port}>{port.port}</TableRow>)}
-                            </TableBody>
-                        </Table>
+                        {
+                            loadingStatus ?
+                            "Loading..." :
+                            <Table size="small">
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell>Open Ports</TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    <TableRow>
+                                        <TableCell>{openPorts.map(port => port.port).join(', ')}</TableCell>
+                                    </TableRow>
+                                </TableBody>
+                            </Table>
                         }
                     </Box>
                 </Collapse>
